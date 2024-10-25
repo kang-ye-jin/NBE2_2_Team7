@@ -1,0 +1,45 @@
+package com.hunmin.domain.entity;
+
+import ch.qos.logback.core.status.Status;
+import jakarta.persistence.*;
+import lombok.*;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
+import java.time.LocalDateTime;
+
+@Entity
+@Getter
+@Setter
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Builder
+@EntityListeners(AuditingEntityListener.class)
+public class Follow{
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long followId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "follower_id")
+    private Member follower;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "followee_id")
+    private Member followee;
+
+    @Column
+    private Boolean isBlock;
+
+    @Column
+    private Boolean notification;
+
+    @Column
+    @CreatedDate
+    private LocalDateTime createdAt;
+
+    @Column
+    @Enumerated(EnumType.STRING)
+    private FollowStatus status;
+}

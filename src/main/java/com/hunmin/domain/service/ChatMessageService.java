@@ -3,7 +3,7 @@ package com.hunmin.domain.service;
 import com.hunmin.domain.dto.chat.ChatMessageDTO;
 import com.hunmin.domain.dto.chat.ChatMessageListRequestDTO;
 import com.hunmin.domain.dto.notification.NotificationSendDTO;
-import com.hunmin.domain.dto.page.ChatMessagePageRequestDTO;
+import com.hunmin.domain.dto.page.PageRequestDTO;
 import com.hunmin.domain.entity.ChatMessage;
 import com.hunmin.domain.entity.ChatRoom;
 import com.hunmin.domain.entity.Member;
@@ -131,10 +131,10 @@ public class ChatMessageService {
         return true;
     }
     //채팅목록 페이징
-    public Page<ChatMessageListRequestDTO> getList(ChatMessagePageRequestDTO chatMessagePageRequestDTO, Long chatRoomId) { //목록
+    public Page<ChatMessageListRequestDTO> getList(PageRequestDTO pageRequestDTO, Long chatRoomId) { //목록
         try {
             Sort sort = Sort.by("createdAt").descending();
-            Pageable pageable = chatMessagePageRequestDTO.getPageable(sort);
+            Pageable pageable = pageRequestDTO.getPageable(sort);
             return chatMessageRepository.chatMessageList(pageable, chatRoomId);
         } catch (Exception e) {
             log.error("쳇서비스 페이징 실패 ={}",e.getMessage());
