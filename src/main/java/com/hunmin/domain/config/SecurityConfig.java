@@ -4,6 +4,7 @@ import com.hunmin.domain.jwt.CustomLogoutFilter;
 import com.hunmin.domain.jwt.JWTFilter;
 import com.hunmin.domain.jwt.JWTUtil;
 import com.hunmin.domain.jwt.LoginFilter;
+import com.hunmin.domain.repository.RefreshRepository;
 import com.hunmin.domain.service.MemberService;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.context.annotation.Bean;
@@ -33,10 +34,12 @@ public class SecurityConfig {
     // AuthenticationConfiguration과 JWT 유틸리티 초기화
     private final AuthenticationConfiguration authenticationConfiguration;
     private final JWTUtil jwtUtil;
+    private final RefreshRepository refreshRepository;
 
-    public SecurityConfig(AuthenticationConfiguration authenticationConfiguration, JWTUtil jwtUtil) {
+    public SecurityConfig(AuthenticationConfiguration authenticationConfiguration, JWTUtil jwtUtil, RefreshRepository refreshRepository) {
         this.authenticationConfiguration = authenticationConfiguration;
         this.jwtUtil = jwtUtil;
+        this.refreshRepository = refreshRepository;
     }
 
     // AuthenticationManager를 Bean으로 등록
@@ -57,7 +60,7 @@ public class SecurityConfig {
 
         AuthenticationManager authManager = authenticationManager(authenticationConfiguration);
 
-        LoginFilter loginFilter = new LoginFilter(authManager, jwtUtil);
+        LoginFilter loginFilter = new LoginFilter(authManager, jwtUtil, refreshRepository);
         loginFilter.setFilterProcessesUrl("/api/members/login");
 
         http
@@ -79,6 +82,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/members/login").permitAll()
                         .requestMatchers("/api/members/reissue").permitAll()
                         .requestMatchers("/api/members/admin").hasRole("ADMIN")
+                        .requestMatchers("/api/members/password/**").permitAll()
                         .requestMatchers("/webjars/**", "/images/**", "/favicon.ico").permitAll()//웹 자원 경로 허용
                         .requestMatchers("/api/notification/**").permitAll() //알림 실시간 반영 위한 수정
                         .requestMatchers("/api/board/uploadImage/**").permitAll() //게시글 작성 이미지
@@ -93,7 +97,7 @@ public class SecurityConfig {
                 .sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterAt(loginFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new JWTFilter(jwtUtil, memberService), UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(new CustomLogoutFilter(jwtUtil), LogoutFilter.class);
+                .addFilterBefore(new CustomLogoutFilter(jwtUtil, refreshRepository), LogoutFilter.class);
         return http.build();
     }
 }
