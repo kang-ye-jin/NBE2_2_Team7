@@ -47,6 +47,7 @@ public class CommentService {
                     .member(member)
                     .board(board)
                     .content(commentRequestDTO.getContent())
+                    .likeCount(0)
                     .build();
 
             commentRepository.save(comment);
@@ -90,7 +91,7 @@ public class CommentService {
             Board board = boardRepository.findById(boardId).orElseThrow(BoardException.NOT_FOUND::get);
             Comment parent = commentRepository.findById(commentId).orElseThrow(CommentException.NOT_FOUND::get);
 
-            Comment children = Comment.builder().member(member).board(board).parent(parent).content(commentRequestDTO.getContent()).build();
+            Comment children = Comment.builder().member(member).board(board).parent(parent).content(commentRequestDTO.getContent()).likeCount(0).build();
 
             commentRepository.save(children);
 
@@ -99,7 +100,7 @@ public class CommentService {
             if (!parentMemberId.equals(children.getMember().getMemberId())) {
                 NotificationSendDTO notificationSendDTO = NotificationSendDTO.builder()
                         .memberId(parentMemberId)
-                        .message("[" + board.getTitle() + "] 에 작성한 " + "'" + parent.getContent() +"'에 새로운 대댓글")
+                        .message("[" + board.getTitle() + "] 에 작성한 댓글 " + "'" + parent.getContent() +"'에 새로운 대댓글")
                         .notificationType(NotificationType.COMMENT)
                         .url("/board/" + boardId)
                         .build();
