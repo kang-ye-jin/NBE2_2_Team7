@@ -29,6 +29,10 @@ const unlikeComment = (commentId) => {
 };
 
 
+const getCommentLikeMembers = (commentId) => {
+    return api.get(`/likeComment/${commentId}/members`); // 좋아요 누른 회원 목록 조회
+};
+
 export {
     createComment,
     createChildComment,
@@ -37,5 +41,5 @@ export {
     getCommentsByBoard,
     likeComment,
     unlikeComment,
+    getCommentLikeMembers,
 };
-

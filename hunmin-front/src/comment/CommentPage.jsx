@@ -6,7 +6,7 @@ import {
     deleteComment,
     getCommentsByBoard,
     unlikeComment,
-    likeComment,
+    likeComment, getCommentLikeMembers,
 } from './CommentService';
 import {
     Typography,
@@ -20,6 +20,7 @@ import {
     Paper,
     Divider,
     Pagination,
+    Modal,
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -36,6 +37,8 @@ const CommentPage = ({ boardId }) => {
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(0);
     const [editCommentMemberId, setEditCommentMemberId] = useState(null);
+    const [isModalOpen, setIsModalOpen] = useState(false); // 모달 상태 추가
+    const [likedMembers, setLikedMembers] = useState([]); // 좋아요 누른 회원 목록
 
     useEffect(() => {
         fetchComments(currentPage);
@@ -63,6 +66,25 @@ const CommentPage = ({ boardId }) => {
             console.error('Error fetching comments:', error);
         }
     };
+
+    const fetchLikedMembers = async (commentId) => {
+        try {
+            const response = await getCommentLikeMembers(commentId);
+
+            // 데이터를 객체 배열로 변환
+            const members = response.data.map((nickname, index) => ({
+                memberId: index, // 인덱스를 임시로 memberId로 사용
+                nickname: nickname,
+            }));
+
+            setLikedMembers(members);
+            setIsModalOpen(true);
+        } catch (error) {
+            console.error('Error fetching liked members:', error);
+        }
+    };
+
+    const handleModalClose = () => setIsModalOpen(false);
 
     const updateCommentLikeStatus = (commentId, isLiked) => {
         const updateComments = (comments) => comments.map(comment => {
@@ -161,20 +183,22 @@ const CommentPage = ({ boardId }) => {
                         <ListItemSecondaryAction>
                             <IconButton onClick={() => handleLikeToggle(comment.commentId, comment.isLiked)}>
                                 {comment.isLiked ? (
-                                    <FavoriteIcon color="error"/> // 좋아요한 댓글은 빨간색 하트
+                                    <FavoriteIcon color="error" />
                                 ) : (
-                                    <FavoriteBorderIcon/> // 좋아요하지 않은 댓글은 빈 하트
+                                    <FavoriteBorderIcon />
                                 )}
                             </IconButton>
-                            <span>{comment.likeCount || 0}</span>
+                            <span onClick={() => fetchLikedMembers(comment.commentId)} style={{ cursor: 'pointer' }}>
+                            {comment.likeCount || 0}
+                        </span>
                             <IconButton edge="end" onClick={() => handleEditClick(comment)}>
-                                <EditIcon/>
+                                <EditIcon />
                             </IconButton>
                             <IconButton edge="end" onClick={() => handleDelete(comment.commentId)}>
-                                <DeleteIcon/>
+                                <DeleteIcon />
                             </IconButton>
                             <IconButton edge="end" onClick={() => setReplyCommentId(comment.commentId)}>
-                                <ReplyIcon/>
+                                <ReplyIcon />
                             </IconButton>
                         </ListItemSecondaryAction>
                     </ListItem>
@@ -245,6 +269,21 @@ const CommentPage = ({ boardId }) => {
                 color="primary"
                 style={{ marginTop: '20px' }}
             />
+            <Modal open={isModalOpen} onClose={handleModalClose}>
+                <Paper style={{ padding: '20px', maxWidth: '300px', margin: '50px auto' }}>
+                    <Typography variant="h6">좋아요 누른 회원 목록</Typography>
+                    <List>
+                        {likedMembers.map((member) => (
+                            <ListItem key={member.memberId}>
+                                <ListItemText primary={member.nickname} />
+                            </ListItem>
+                        ))}
+                    </List>
+                    <Button onClick={handleModalClose} variant="contained" color="primary" style={{ marginTop: '10px' }}>
+                        닫기
+                    </Button>
+                </Paper>
+            </Modal>
         </Paper>
     );
 };
