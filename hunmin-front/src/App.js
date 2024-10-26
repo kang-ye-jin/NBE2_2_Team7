@@ -24,6 +24,7 @@ import LearningPage from "./word/LearningPage";
 import PasswordVerify from './member/PasswordVerify';
 import PasswordUpdate from './member/PasswordUpdate';
 
+import FollowForm from './follow/followForm'; // followForm 컴포넌트 임포트
 
 const App = () => {
     const [token, setToken] = useState(localStorage.getItem('token') || '');
@@ -75,6 +76,9 @@ const AppContent = ({ token, setToken }) => {
                         <Route path="/word-edit" element={<WordEditPage />} />
                         <Route path="/word-learning/levelSelect" element={<LevelSelectPage />} />
                         <Route path="/word-learning/start" element={<LearningPage />} />
+
+                        {/* 팔로우 기능 시스템 라우트 추가 */}
+                        <Route path="/followForm" element={<FollowForm />} />
 
                     </>
                 ) : (

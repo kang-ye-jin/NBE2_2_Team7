@@ -88,7 +88,9 @@ const Header = () => {
 
         if (notification.url.includes('/chat-room')) {
             window.location.href = notification.url;
-        } else {
+        }else if(notification.url.includes('/follow')){
+            window.location.href = "http://localhost:3000/followForm";
+        }else {
             window.location.href = notification.url;
         }
     };

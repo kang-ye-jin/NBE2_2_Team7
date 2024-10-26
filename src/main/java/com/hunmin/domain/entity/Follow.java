@@ -15,6 +15,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder
+@ToString
 @EntityListeners(AuditingEntityListener.class)
 public class Follow{
     @Id
@@ -29,17 +30,17 @@ public class Follow{
     @JoinColumn(name = "followee_id")
     private Member followee;
 
-    @Column
+    @Column(nullable = false)
     private Boolean isBlock;
 
-    @Column
+    @Column(nullable = false)
     private Boolean notification;
 
-    @Column
+    @Column(nullable = false)
     @CreatedDate
     private LocalDateTime createdAt;
 
-    @Column
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private FollowStatus status;
 }

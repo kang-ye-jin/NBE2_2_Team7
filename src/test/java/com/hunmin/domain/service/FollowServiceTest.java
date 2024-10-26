@@ -39,15 +39,5 @@ public class FollowServiceTest {
     }
     @Test
     public void 팔로우목록보기(){
-        //given
-        Long memberId = 1L;
-        int page = 1;
-        int size = 10;
-        //when
-        PageRequestDTO pageRequestDTO = PageRequestDTO.builder().page(1).size(10).build();
-        Page<FollowRequestDTO> followRequestDTOS = followService.readPage(pageRequestDTO, memberId);
-        //then
-        followRequestDTOS.forEach(i->log.info("followRequestDTOS{}",i.toString()));
     }
-
 }

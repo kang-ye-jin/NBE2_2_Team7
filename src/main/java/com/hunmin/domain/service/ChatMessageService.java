@@ -21,7 +21,6 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
@@ -54,10 +53,9 @@ public class ChatMessageService {
                 .type(chatMessageDTO.getType())
                 .build();
         ChatMessage savedChatMessage = chatMessageRepository.save(chatMessage);
-
-        ChannelTopic topic = ChannelTopic.of("" + chatMessageDTO.getChatRoomId());
         redisSubscriber.sendMessage(new ChatMessageDTO(savedChatMessage));
 
+        // 알림
         Long senderId = sender.getMemberId();
         Long receiverId = null;
 

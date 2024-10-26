@@ -20,6 +20,7 @@ import {
 } from '@mui/material';
 import ChatIcon from '@mui/icons-material/Chat'; // 채팅 아이콘 임포트
 import EditIcon from '@mui/icons-material/Edit'; // 연필 아이콘 임포트
+import PeopleIcon from '@mui/icons-material/People';
 
 const BoardListPage = () => {
     const navigate = useNavigate(); // navigate 함수 추가
@@ -159,6 +160,11 @@ const BoardListPage = () => {
         navigate('/chat-rooms/list'); // 채팅 목록 페이지로 이동
     };
 
+    // 팔로우 버튼 클릭 핸들러
+    const handleFollowClick = () => {
+        navigate('/followForm'); // 채팅 목록 페이지로 이동
+    };
+
     const fetchBookmarkedBoards = async () => {
         try {
             const response = await api.get(`/bookmark/member/${memberId}`);
@@ -210,6 +216,9 @@ const BoardListPage = () => {
                     {/* 오른쪽: 채팅하기 버튼 */}
                     <Button color="inherit" startIcon={<ChatIcon />} onClick={handleChatClick}>
                         채팅하기
+                    </Button>
+                    <Button color="inherit" startIcon={<PeopleIcon />} onClick={handleFollowClick}>
+                        FOLLOW 화면
                     </Button>
                     <Button color="inherit" onClick={handleLogout}>
                         로그아웃

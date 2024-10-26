@@ -1,6 +1,7 @@
 package com.hunmin.domain.repository.search;
 
 import com.hunmin.domain.dto.follow.FollowRequestDTO;
+import com.hunmin.domain.entity.QFollow;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.JPQLQueryFactory;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -12,7 +13,6 @@ import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
-import static com.hunmin.domain.entity.QFollow.follow;
 import static com.hunmin.domain.entity.QMember.member;
 
 @Log4j2
@@ -27,31 +27,46 @@ public class FollowSearchImpl implements FollowSearch {
     @Override
     public Page<FollowRequestDTO> getFollowPage(Long memberId, Pageable pageable) {
 
+        // 서로 다른 별칭을 가진 QFollow 인스턴스 생성
+        QFollow followeeFollow = new QFollow("followeeFollow");
+        QFollow followerFollow = new QFollow("followerFollow");
+
         List<FollowRequestDTO> results = queryFactory
                 .select(Projections.bean(FollowRequestDTO.class,
-                        follow.followId,
-                        follow.follower.memberId.as("followerId"),
-                        follow.followee.memberId.as("followeeId"),
-                        follow.notification,
-                        follow.isBlock,
-                        follow.createdAt)).distinct()
+                        followeeFollow.followId,
+                        followeeFollow.follower.memberId.as("followerId"),
+                        followeeFollow.followee.memberId.as("followeeId"),
+                        followeeFollow.notification,
+                        followeeFollow.isBlock,
+                        followeeFollow.status,
+                        followeeFollow.follower.nickname.as("followerName"),
+                        followeeFollow.follower.email.as("followerEmail"),
+                        followeeFollow.follower.image.as("followerImage"),
+                        followeeFollow.followee.nickname.as("followeeName"),
+                        followeeFollow.followee.email.as("followeeEmail"),
+                        followeeFollow.followee.image.as("followeeImage"),
+                        followeeFollow.createdAt)).distinct()
                 .from(member)
-                .join(member.followees, follow)
-                .where(member.memberId.eq(memberId), follow.isNotNull())
+                .leftJoin(member.followees, followeeFollow)
+                .leftJoin(member.followers, followerFollow)
+                .where(member.memberId.eq(memberId))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
-        log.info("results{}",results.toArray());
 
+        log.info("results{}", results.toArray());
+
+        // 전체 갯수 계산 시 특정 요건에 맞게 쿼리 수정 필요할 수 있음
         Long total = queryFactory
-                .select(follow.count())
+                .select(followeeFollow.count())
                 .from(member)
-                .leftJoin(member.followees, follow)
-                .where(member.memberId.eq(memberId), follow.isNotNull())
+                .leftJoin(member.followees, followeeFollow)
+                .leftJoin(member.followers, followerFollow)
+                .where(member.memberId.eq(memberId))
                 .fetchOne();
-        log.info("total{}",total);
+        log.info("total{}", total);
 
-        long totalCount = total == null? 0L:total;
+        long totalCount = total == null ? 0L : total;
 
         return new PageImpl<>(results, pageable, totalCount);
     }
