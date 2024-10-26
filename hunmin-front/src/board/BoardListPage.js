@@ -20,12 +20,13 @@ import {
 } from '@mui/material';
 import ChatIcon from '@mui/icons-material/Chat'; // 채팅 아이콘 임포트
 import EditIcon from '@mui/icons-material/Edit'; // 연필 아이콘 임포트
-
+import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings'; //관리자 페이지 이동 버튼
 const BoardListPage = () => {
     const navigate = useNavigate(); // navigate 함수 추가
     const memberId = localStorage.getItem('memberId');
     const nickname = localStorage.getItem('nickname');
     const profileImage = localStorage.getItem('image');
+    const role = localStorage.getItem('role'); // 추가 (관리자 확인용)
     const [boards, setBoards] = useState([]);
     const [filteredBoards, setFilteredBoards] = useState([]);
     const [page, setPage] = useState(1);
@@ -211,6 +212,17 @@ const BoardListPage = () => {
                     <Button color="inherit" startIcon={<ChatIcon />} onClick={handleChatClick}>
                         채팅하기
                     </Button>
+                    {/* 관리자 권한이 있는 경우에만 관리자 페이지 아이콘 표시 */}
+                    {role === 'ADMIN' && (
+                        <IconButton
+                            color="inherit"
+                            onClick={() => navigate('/admin/members')}
+                            style={{ marginLeft: '10px' }}
+                            title="관리자 페이지"
+                        >
+                            <AdminPanelSettingsIcon />
+                        </IconButton>
+                    )}
                     <Button color="inherit" onClick={handleLogout}>
                         로그아웃
                     </Button>

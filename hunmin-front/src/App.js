@@ -23,7 +23,9 @@ import LevelSelectPage from "./word/LevelSelectPage";
 import LearningPage from "./word/LearningPage";
 import PasswordVerify from './member/PasswordVerify';
 import PasswordUpdate from './member/PasswordUpdate';
-
+import AdminMembersList from "./admin/AdminMemberList";
+import AdminMemberPostsAndComments from "./admin/AdminMemberPostsAndComments";
+import AdminMemberDetail from "./admin/AdminMemberDetail";
 
 const App = () => {
     const [token, setToken] = useState(localStorage.getItem('token') || '');
@@ -76,6 +78,12 @@ const AppContent = ({ token, setToken }) => {
                         <Route path="/word-learning/levelSelect" element={<LevelSelectPage />} />
                         <Route path="/word-learning/start" element={<LearningPage />} />
 
+                        {/* 관리자 라우트 추가 */}
+                        <Route path="/admin/members" element={<AdminMembersList />} />
+                        <Route path="/admin/member/:memberId" element={<AdminMemberDetail />} />
+                        <Route path="/admin/member/:memberId/posts-comments" element={<AdminMemberPostsAndComments />} />
+
+                        )
                     </>
                 ) : (
                     <Route path="*" element={<Navigate to="/login" />} />
