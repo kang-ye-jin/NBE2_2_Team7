@@ -100,7 +100,7 @@ public class CommentService {
             if (!parentMemberId.equals(children.getMember().getMemberId())) {
                 NotificationSendDTO notificationSendDTO = NotificationSendDTO.builder()
                         .memberId(parentMemberId)
-                        .message("[" + board.getTitle() + "] 에 작성한 " + "'" + parent.getContent() +"'에 새로운 대댓글")
+                        .message("[" + board.getTitle() + "] 에 작성한 댓글 " + "'" + parent.getContent() +"'에 새로운 대댓글")
                         .notificationType(NotificationType.COMMENT)
                         .url("/board/" + boardId)
                         .build();
