@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -58,5 +59,25 @@ class LikeCommentRepositoryTest {
         boolean exists = likeCommentRepository.existsByMemberAndComment(member, comment);
 
         assertTrue(exists);
+    }
+
+    //좋아요 누른 사용자 목록 조회 테스트
+    @Test
+    void findMembersByLikedCommentId() {
+        Member member1 = memberRepository.findById(11L).get();
+        Member member2 = memberRepository.findById(12L).get();
+        Comment comment = commentRepository.findById(11L).get();
+
+        LikeComment likeComment1 = LikeComment.builder().member(member1).comment(comment).build();
+        LikeComment likeComment2 = LikeComment.builder().member(member2).comment(comment).build();
+
+        likeCommentRepository.save(likeComment1);
+        likeCommentRepository.save(likeComment2);
+
+        List<Member> likedMembers = likeCommentRepository.findMembersByLikedCommentId(comment.getCommentId());
+
+        assertEquals(2, likedMembers.size());
+        assertTrue(likedMembers.contains(member1));
+        assertTrue(likedMembers.contains(member2));
     }
 }

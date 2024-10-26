@@ -14,6 +14,9 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 @Log4j2
@@ -64,5 +67,13 @@ public class LikeCommentService {
         Comment comment = commentRepository.findById(commentId).orElseThrow(CommentException.NOT_FOUND::get);
 
         return likeCommentRepository.existsByMemberAndComment(member, comment);
+    }
+
+    //좋아요 누른 사용자 목록 조회
+    public List<String> getLikeCommentMembers(Long commentId) {
+        List<Member> members = likeCommentRepository.findMembersByLikedCommentId(commentId);
+        return members.stream()
+                .map(Member::getNickname)
+                .collect(Collectors.toList());
     }
 }

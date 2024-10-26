@@ -13,6 +13,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -32,6 +33,7 @@ class LikeCommentServiceTest {
     private CommentRepository commentRepository;
 
     private Member member;
+    private Member member2;
     private Board board;
     private Comment comment;
     private LikeComment likeComment;
@@ -40,6 +42,7 @@ class LikeCommentServiceTest {
     public void setUp() {
         MockitoAnnotations.openMocks(this);
         member = new Member(1L, "테스터");
+        member2 = new Member(2L, "테스터2");
         board = new Board(1L, member, "테스트 제목", "테스트 내용");
         comment = new Comment(1L, member, board, "테스트 댓글");
         likeComment = new LikeComment(1L, member, comment);
@@ -79,5 +82,19 @@ class LikeCommentServiceTest {
         boolean isLiked = likeCommentService.isLikeComment(1L, 1L);
 
         assertTrue(isLiked);
+    }
+
+    //좋아요 누른 사용자 목록 조회 테스트
+    @Test
+    void getLikeCommentMembers() {
+        when(commentRepository.findById(1L)).thenReturn(Optional.of(comment));
+        when(likeCommentRepository.findMembersByLikedCommentId(comment.getCommentId()))
+                .thenReturn(List.of(member, member2));
+
+        List<String> likedMembersNicknames = likeCommentService.getLikeCommentMembers(comment.getCommentId());
+
+        assertEquals(2, likedMembersNicknames.size());
+        assertTrue(likedMembersNicknames.contains("테스터"));
+        assertTrue(likedMembersNicknames.contains("테스터2"));
     }
 }
