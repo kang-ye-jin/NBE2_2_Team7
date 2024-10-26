@@ -23,8 +23,14 @@ import LevelSelectPage from "./word/LevelSelectPage";
 import LearningPage from "./word/LearningPage";
 import PasswordVerify from './member/PasswordVerify';
 import PasswordUpdate from './member/PasswordUpdate';
+<<<<<<< HEAD
 
 import FollowForm from './follow/followForm'; // followForm 컴포넌트 임포트
+=======
+import AdminMembersList from "./admin/AdminMemberList";
+import AdminMemberPostsAndComments from "./admin/AdminMemberPostsAndComments";
+import AdminMemberDetail from "./admin/AdminMemberDetail";
+>>>>>>> 48f9a6a81dadbbed31d17539005f495a1a7a8b1e
 
 const App = () => {
     const [token, setToken] = useState(localStorage.getItem('token') || '');
@@ -77,9 +83,18 @@ const AppContent = ({ token, setToken }) => {
                         <Route path="/word-learning/levelSelect" element={<LevelSelectPage />} />
                         <Route path="/word-learning/start" element={<LearningPage />} />
 
+<<<<<<< HEAD
                         {/* 팔로우 기능 시스템 라우트 추가 */}
                         <Route path="/followForm" element={<FollowForm />} />
 
+=======
+                        {/* 관리자 라우트 추가 */}
+                        <Route path="/admin/members" element={<AdminMembersList />} />
+                        <Route path="/admin/member/:memberId" element={<AdminMemberDetail />} />
+                        <Route path="/admin/member/:memberId/posts-comments" element={<AdminMemberPostsAndComments />} />
+
+                        )
+>>>>>>> 48f9a6a81dadbbed31d17539005f495a1a7a8b1e
                     </>
                 ) : (
                     <Route path="*" element={<Navigate to="/login" />} />
