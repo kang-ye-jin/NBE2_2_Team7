@@ -4,7 +4,9 @@ import {
     createChildComment,
     updateComment,
     deleteComment,
-    getCommentsByBoard
+    getCommentsByBoard,
+    unlikeComment,
+    likeComment, getCommentLikeMembers,
 } from './CommentService';
 import {
     Typography,
@@ -18,10 +20,14 @@ import {
     Paper,
     Divider,
     Pagination,
+    Modal,
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ReplyIcon from '@mui/icons-material/Reply';
+import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
+import FavoriteIcon from '@mui/icons-material/Favorite';
+import api from '../axios';
 
 const CommentPage = ({ boardId }) => {
     const [comments, setComments] = useState([]);
@@ -30,7 +36,9 @@ const CommentPage = ({ boardId }) => {
     const [replyCommentId, setReplyCommentId] = useState(null);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(0);
-    const [editCommentMemberId, setEditCommentMemberId] = useState(null); // 댓글의 원래 memberId 저장
+    const [editCommentMemberId, setEditCommentMemberId] = useState(null);
+    const [isModalOpen, setIsModalOpen] = useState(false); // 모달 상태 추가
+    const [likedMembers, setLikedMembers] = useState([]); // 좋아요 누른 회원 목록
 
     useEffect(() => {
         fetchComments(currentPage);
@@ -38,21 +46,88 @@ const CommentPage = ({ boardId }) => {
 
     const fetchComments = async (page) => {
         try {
+            const memberId = localStorage.getItem('memberId');
             const response = await getCommentsByBoard(boardId, { page, size: 5 });
-            setComments(response.data.content);
-            setTotalPages(response.data.totalPages); // 전체 페이지 수 설정
+            const commentList = response.data.content;
+
+            const updatedComments = await Promise.all(
+                commentList.map(async (comment) => {
+                    const isLikedResponse = await api.get(`/likeComment/${comment.commentId}/member/${memberId}`);
+                    return {
+                        ...comment,
+                        isLiked: isLikedResponse.data,
+                    };
+                })
+            );
+
+            setComments(updatedComments);
+            setTotalPages(response.data.totalPages);
         } catch (error) {
             console.error('Error fetching comments:', error);
         }
     };
 
+    const fetchLikedMembers = async (commentId) => {
+        try {
+            const response = await getCommentLikeMembers(commentId);
+
+            // 데이터를 객체 배열로 변환
+            const members = response.data.map((nickname, index) => ({
+                memberId: index, // 인덱스를 임시로 memberId로 사용
+                nickname: nickname,
+            }));
+
+            setLikedMembers(members);
+            setIsModalOpen(true);
+        } catch (error) {
+            console.error('Error fetching liked members:', error);
+        }
+    };
+
+    const handleModalClose = () => setIsModalOpen(false);
+
+    const updateCommentLikeStatus = (commentId, isLiked) => {
+        const updateComments = (comments) => comments.map(comment => {
+            if (comment.commentId === commentId) {
+                return {
+                    ...comment,
+                    isLiked: !isLiked,
+                    likeCount: isLiked ? comment.likeCount - 1 : comment.likeCount + 1
+                };
+            }
+            if (comment.children) {
+                return {
+                    ...comment,
+                    children: updateComments(comment.children),
+                };
+            }
+            return comment;
+        });
+
+        setComments(prevComments => updateComments(prevComments));
+    };
+
+    const handleLikeToggle = async (commentId, isLiked) => {
+        const memberId = localStorage.getItem('memberId');
+        try {
+            if (isLiked) {
+                await unlikeComment(commentId);
+            } else {
+                await likeComment(commentId);
+            }
+            updateCommentLikeStatus(commentId, isLiked);
+        } catch (error) {
+            console.error('Error toggling like:', error);
+        }
+    };
+
     const handleCreate = async () => {
         try {
-            const memberId = localStorage.getItem('memberId'); // localStorage에서 memberId 가져오기
-            const commentData = { content, memberId }; // memberId를 commentData에 포함
+            const memberId = localStorage.getItem('memberId');
+            const commentData = { content, memberId };
             await createComment(boardId, commentData);
             setContent('');
-            fetchComments(currentPage); // 현재 페이지로 댓글 새로고침
+            fetchComments(currentPage);
         } catch (error) {
             console.error('Error creating comment:', error);
         }
@@ -60,8 +135,8 @@ const CommentPage = ({ boardId }) => {
 
     const handleReply = async (commentId) => {
         try {
-            const memberId = localStorage.getItem('memberId'); // localStorage에서 memberId 가져오기
-            const commentData = { content, memberId }; // memberId를 commentData에 포함
+            const memberId = localStorage.getItem('memberId');
+            const commentData = { content, memberId };
             await createChildComment(boardId, commentId, commentData);
             setContent('');
             setReplyCommentId(null);
@@ -73,7 +148,7 @@ const CommentPage = ({ boardId }) => {
 
     const handleEdit = async () => {
         try {
-            const commentData = { content, memberId: editCommentMemberId }; // 원래 댓글의 memberId 사용
+            const commentData = { content, memberId: editCommentMemberId };
             await updateComment(boardId, editCommentId, commentData);
             setContent('');
             setEditCommentId(null);
@@ -100,13 +175,23 @@ const CommentPage = ({ boardId }) => {
 
             return (
                 <div key={comment.commentId}>
-                    <ListItem divider style={{ marginLeft: level * 20 }}> {/* 계단식 들여쓰기 */}
+                    <ListItem divider style={{ marginLeft: level * 20 }}>
                         <ListItemText
                             primary={`${comment.nickname}: ${comment.content}`}
                             secondary={`작성일: ${displayDate}`}
                         />
                         <ListItemSecondaryAction>
-                            <IconButton edge="end" onClick={() => handleEditClick(comment)}> {/* 수정 버튼 클릭 시 처리 */}
+                            <IconButton onClick={() => handleLikeToggle(comment.commentId, comment.isLiked)}>
+                                {comment.isLiked ? (
+                                    <FavoriteIcon color="error" />
+                                ) : (
+                                    <FavoriteBorderIcon />
+                                )}
+                            </IconButton>
+                            <span onClick={() => fetchLikedMembers(comment.commentId)} style={{ cursor: 'pointer' }}>
+                            {comment.likeCount || 0}
+                        </span>
+                            <IconButton edge="end" onClick={() => handleEditClick(comment)}>
                                 <EditIcon />
                             </IconButton>
                             <IconButton edge="end" onClick={() => handleDelete(comment.commentId)}>
@@ -135,7 +220,7 @@ const CommentPage = ({ boardId }) => {
 
                     {comment.children && comment.children.length > 0 && (
                         <List>
-                            {renderComments(comment.children, level + 1)} {/* 대댓글에 대한 레벨 증가 */}
+                            {renderComments(comment.children, level + 1)}
                         </List>
                     )}
                 </div>
@@ -146,7 +231,7 @@ const CommentPage = ({ boardId }) => {
     const handleEditClick = (comment) => {
         setEditCommentId(comment.commentId);
         setContent(comment.content);
-        setEditCommentMemberId(comment.memberId); // 댓글의 원래 memberId 저장
+        setEditCommentMemberId(comment.memberId);
     };
 
     const handlePageChange = (event, newPage) => {
@@ -184,6 +269,21 @@ const CommentPage = ({ boardId }) => {
                 color="primary"
                 style={{ marginTop: '20px' }}
             />
+            <Modal open={isModalOpen} onClose={handleModalClose}>
+                <Paper style={{ padding: '20px', maxWidth: '300px', margin: '50px auto' }}>
+                    <Typography variant="h6">좋아요 누른 회원 목록</Typography>
+                    <List>
+                        {likedMembers.map((member) => (
+                            <ListItem key={member.memberId}>
+                                <ListItemText primary={member.nickname} />
+                            </ListItem>
+                        ))}
+                    </List>
+                    <Button onClick={handleModalClose} variant="contained" color="primary" style={{ marginTop: '10px' }}>
+                        닫기
+                    </Button>
+                </Paper>
+            </Modal>
         </Paper>
     );
 };
