@@ -20,12 +20,8 @@ import {
 } from '@mui/material';
 import ChatIcon from '@mui/icons-material/Chat'; // 채팅 아이콘 임포트
 import EditIcon from '@mui/icons-material/Edit'; // 연필 아이콘 임포트
-<<<<<<< HEAD
 import PeopleIcon from '@mui/icons-material/People';
-
-=======
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings'; //관리자 페이지 이동 버튼
->>>>>>> 48f9a6a81dadbbed31d17539005f495a1a7a8b1e
 const BoardListPage = () => {
     const navigate = useNavigate(); // navigate 함수 추가
     const memberId = localStorage.getItem('memberId');
@@ -222,11 +218,9 @@ const BoardListPage = () => {
                     <Button color="inherit" startIcon={<ChatIcon />} onClick={handleChatClick}>
                         채팅하기
                     </Button>
-<<<<<<< HEAD
                     <Button color="inherit" startIcon={<PeopleIcon />} onClick={handleFollowClick}>
                         FOLLOW 화면
                     </Button>
-=======
                     {/* 관리자 권한이 있는 경우에만 관리자 페이지 아이콘 표시 */}
                     {role === 'ADMIN' && (
                         <IconButton
@@ -238,7 +232,6 @@ const BoardListPage = () => {
                             <AdminPanelSettingsIcon />
                         </IconButton>
                     )}
->>>>>>> 48f9a6a81dadbbed31d17539005f495a1a7a8b1e
                     <Button color="inherit" onClick={handleLogout}>
                         로그아웃
                     </Button>

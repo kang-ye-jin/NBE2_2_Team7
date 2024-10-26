@@ -46,6 +46,7 @@ public class APIControllerAdvice {
 
         return ResponseEntity.status(e.getCode()).body(map);
     }
+
     //채팅 예외 처리
     @ExceptionHandler(ChatMessageTaskException.class)
     public ResponseEntity<Map<String, String>> handleChatMessageTaskException(ChatMessageTaskException e) {
@@ -53,6 +54,7 @@ public class APIControllerAdvice {
 
         return ResponseEntity.status(e.getCode()).body(map);
     }
+
     //채팅룸 예외 처리
     @ExceptionHandler(ChatRoomTaskException.class)
     public ResponseEntity<Map<String, String>> handleChatRoomTaskException(ChatRoomTaskException e) {
@@ -68,21 +70,23 @@ public class APIControllerAdvice {
 
         return ResponseEntity.status(e.getCode()).body(map);
     }
-<<<<<<< HEAD
-    // 단어 예외 처리
+
+    // 팔로우 예외 처리
     @ExceptionHandler(FollowTaskException.class)
     public ResponseEntity<Map<String, String>> handleFollowTaskException(FollowTaskException e) {
-=======
-
-    // 관리자 예외 처리
-    @ExceptionHandler(AdminTaskException.class)
-    public ResponseEntity<Map<String, String>> handleAdminTaskException(AdminTaskException e) {
->>>>>>> 48f9a6a81dadbbed31d17539005f495a1a7a8b1e
         Map<String, String> map = Map.of("error", e.getMessage());
 
         return ResponseEntity.status(e.getCode()).body(map);
     }
-<<<<<<< HEAD
+
+    // 관리자 예외 처리
+    @ExceptionHandler(AdminTaskException.class)
+    public ResponseEntity<Map<String, String>> handleAdminTaskException(AdminTaskException e) {
+        Map<String, String> map = Map.of("error", e.getMessage());
+
+        return ResponseEntity.status(e.getCode()).body(map);
+    }
+
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<Map<String, String>> handleProductTaskException(HttpMessageNotReadableException e) {
         Map<String, String> map = new HashMap<>();
@@ -109,7 +113,7 @@ public class APIControllerAdvice {
         Map<String, String> map = new HashMap<>();
         map.put("error", "입력값 형식을 확인해주세요.");
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(map);
-=======
+    }
 
     // 멤버 예외 처리
     @ExceptionHandler(MemberTaskException.class)
@@ -117,6 +121,5 @@ public class APIControllerAdvice {
         Map<String, String> map = Map.of("error", e.getMessage());
 
         return ResponseEntity.status(e.getCode()).body(map);
->>>>>>> 48f9a6a81dadbbed31d17539005f495a1a7a8b1e
     }
 }
