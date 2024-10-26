@@ -1,11 +1,12 @@
 package com.hunmin.domain.service;
 
-import com.hunmin.domain.entity.Comment;
-import com.hunmin.domain.entity.LikeComment;
-import com.hunmin.domain.entity.Member;
+import com.hunmin.domain.dto.comment.CommentResponseDTO;
+import com.hunmin.domain.dto.notification.NotificationSendDTO;
+import com.hunmin.domain.entity.*;
 import com.hunmin.domain.exception.CommentException;
 import com.hunmin.domain.exception.LikeCommentException;
 import com.hunmin.domain.exception.MemberException;
+import com.hunmin.domain.handler.SseEmitters;
 import com.hunmin.domain.repository.CommentRepository;
 import com.hunmin.domain.repository.LikeCommentRepository;
 import com.hunmin.domain.repository.MemberRepository;
@@ -13,7 +14,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,12 +27,16 @@ public class LikeCommentService {
     private final LikeCommentRepository likeCommentRepository;
     private final MemberRepository memberRepository;
     private final CommentRepository commentRepository;
+    private final NotificationService notificationService;
+    private final SseEmitters sseEmitters;
 
     //좋아요 등록
     @Transactional
     public void createLikeComment(Long memberId, Long commentId) {
         Member member = memberRepository.findById(memberId).orElseThrow(MemberException.NOT_FOUND::get);
         Comment comment = commentRepository.findById(commentId).orElseThrow(CommentException.NOT_FOUND::get);
+        Long commentMemberId = comment.getMember().getMemberId();
+        Board board = comment.getBoard();
 
         likeCommentRepository.findByMemberAndComment(member, comment).ifPresentOrElse(
                 likeComment -> {
@@ -38,6 +45,28 @@ public class LikeCommentService {
                 () -> {
                     likeCommentRepository.save(LikeComment.builder().member(member).comment(comment).build());
                     comment.incrementLikeCount();
+                    if (!commentMemberId.equals(memberId)) {
+                        NotificationSendDTO notificationSendDTO = NotificationSendDTO.builder()
+                                .memberId(commentMemberId)
+                                .message("[" + board.getTitle() + "] 에 작성한 댓글 " + "'" + comment.getContent() +"'에 " + member.getNickname() +" 님의 좋아요")
+                                .notificationType(NotificationType.COMMENT)
+                                .url("/board/" + board.getBoardId())
+                                .build();
+
+                        notificationService.send(notificationSendDTO);
+                    }
+
+                    String emitterId = commentMemberId + "_";
+                    SseEmitter emitter = sseEmitters.findSingleEmitter(emitterId);
+
+                    if (emitter != null) {
+                        try {
+                            emitter.send(new CommentResponseDTO(comment));
+                        } catch (IOException e) {
+                            log.error("Error sending comment to client via SSE: {}", e.getMessage());
+                            sseEmitters.delete(emitterId);
+                        }
+                    }
                 }
         );
     }
