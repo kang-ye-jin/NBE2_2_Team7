@@ -20,8 +20,12 @@ import WordViewPage from "./word/WordViewPage";
 import WordRegisterPage from "./word/WordRegisterPage";
 import WordEditPage from "./word/WordEditPage";
 import LevelSelectPage from "./word/LevelSelectPage";
+import LanguageSelectPage from "./word/LanguageSelectPage";
 import LearningPage from "./word/LearningPage";
-
+import TestLanguageSelectPage from './word/TestLanguageSelectPage';
+import TestLevelSelectPage from './word/TestLevelSelectPage';
+import TestPage from './word/TestPage';
+import TestRecords from './word/TestRecords';
 
 const App = () => {
     const [token, setToken] = useState(localStorage.getItem('token') || '');
@@ -70,8 +74,12 @@ const AppContent = ({ token, setToken }) => {
                         <Route path="/word-register" element={<WordRegisterPage />} />
                         <Route path="/word-edit" element={<WordEditPage />} />
                         <Route path="/word-learning/levelSelect" element={<LevelSelectPage />} />
+                        <Route path="/word-learning/languageSelect" element={<LanguageSelectPage />} />
                         <Route path="/word-learning/start" element={<LearningPage />} />
-
+                        <Route path="/word-test/languageSelect" element={<TestLanguageSelectPage />} />
+                        <Route path="/word-test/levelSelect" element={<TestLevelSelectPage />} />
+                        <Route path="/word-test/start" element={<TestPage />} />
+                        <Route path="/word-test/records" element={<TestRecords />} />
                     </>
                 ) : (
                     <Route path="*" element={<Navigate to="/login" />} />

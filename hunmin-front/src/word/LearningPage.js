@@ -33,9 +33,11 @@ const LearningPage = () => {
     useEffect(() => {
         const fetchWords = async () => {
             try {
+                console.log(`Fetching words for lang: ${lang}, level: ${level}`); // 로그 추가
                 const response = await api.get(`/words/learning/start`, {
                     params: { lang, level },
                 });
+                console.log("Response data:", response.data); // 응답 로그 추가
                 setWords(response.data.words);
                 const initialTimeLeft = getTimeForLevel(level); // 레벨에 따른 초기화
                 setTimeLeft(initialTimeLeft); // 초기 시간 설정
