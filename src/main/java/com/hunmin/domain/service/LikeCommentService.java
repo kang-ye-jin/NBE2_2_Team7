@@ -38,8 +38,6 @@ public class LikeCommentService {
                 () -> {
                     likeCommentRepository.save(LikeComment.builder().member(member).comment(comment).build());
                     comment.incrementLikeCount();
-                    log.info("__!_!_@!)@_~_!~__!~_!_!~~!_");
-                    log.info(comment.getLikeCount());
                 }
         );
     }
@@ -54,8 +52,6 @@ public class LikeCommentService {
         try {
             likeCommentRepository.delete(likeComment);
             comment.decrementLikeCount();
-            log.info("__!_!_@!)@_~_!~__!~_!_!~~!_");
-            log.info(comment.getLikeCount());
         } catch (Exception e) {
             throw LikeCommentException.NOT_DELETED.get();
         }

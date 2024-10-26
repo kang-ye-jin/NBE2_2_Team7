@@ -13,7 +13,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/likeComment")
 @RequiredArgsConstructor
-@Log4j2
 public class LikeCommentController {
 
     private final LikeCommentService likeCommentService;
@@ -46,8 +45,6 @@ public class LikeCommentController {
     @GetMapping("/{commentId}/members")
     public ResponseEntity<List<String>> getLikeCommentMembers(@PathVariable Long commentId) {
         List<String> members = likeCommentService.getLikeCommentMembers(commentId);
-        log.info("@@@@@@@@@@@@@@@@");
-        log.info(members);
         return ResponseEntity.ok(members);
     }
 }
