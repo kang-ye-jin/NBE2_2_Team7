@@ -5,6 +5,7 @@ import com.hunmin.domain.dto.comment.CommentResponseDTO;
 import com.hunmin.domain.dto.member.MemberStatusDTO;
 import com.hunmin.domain.dto.page.PageRequestDTO;
 import com.hunmin.domain.service.AdminService;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -31,6 +32,7 @@ public class AdminController {
     }
 
     // 회원 ID로 회원 정보 검색
+    @Operation(summary = "회원 검색", description = "회원을 ID로 검색할 때 사용하는 API")
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/member/{memberId}")
     public ResponseEntity<MemberStatusDTO> getMemberById(@PathVariable Long memberId) {
@@ -40,6 +42,7 @@ public class AdminController {
     }
 
     // 회원 닉네임으로 회원 정보 검색
+    @Operation(summary = "회원 검색", description = "회원을 닉네임으로 검색할 때 사용하는 API")
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/member/nickname/{username}")
     public ResponseEntity<MemberStatusDTO> getMemberByNickname(@PathVariable String username) {
@@ -49,6 +52,7 @@ public class AdminController {
     }
 
     // 모든 회원 목록 조회
+    @Operation(summary = "회원 조회", description = "회원을 목록을 조회할 때 사용하는 API")
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/members")
     public ResponseEntity<Page<MemberStatusDTO>> getAllMembers(PageRequestDTO pageRequestDTO) {
@@ -58,6 +62,7 @@ public class AdminController {
     }
 
     // 특정 회원의 작성글 목록 조회
+    @Operation(summary = "회원 작성글 조회", description = "특정 회원의 작성글 목록을 조회할 때 사용하는 API")
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/member/{memberId}/boards")
     public ResponseEntity<Page<BoardResponseDTO>> getBoardsByMemberId(
@@ -68,6 +73,7 @@ public class AdminController {
     }
 
     // 특정 회원의 댓글 목록 조회
+    @Operation(summary = "회원 작성댓글 조회", description = "특정 회원의 작성글 목록을 조회할 때 사용하는 API")
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/member/{memberId}/comments")
     public ResponseEntity<Page<CommentResponseDTO>> getCommentsByMemberId(
