@@ -20,12 +20,13 @@ import {
 } from '@mui/material';
 import ChatIcon from '@mui/icons-material/Chat'; // 채팅 아이콘 임포트
 import EditIcon from '@mui/icons-material/Edit'; // 연필 아이콘 임포트
-
+import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings'; //관리자 페이지 이동 버튼
 const BoardListPage = () => {
     const navigate = useNavigate(); // navigate 함수 추가
     const memberId = localStorage.getItem('memberId');
     const nickname = localStorage.getItem('nickname');
     const profileImage = localStorage.getItem('image');
+    const role = localStorage.getItem('role'); // 추가 (관리자 확인용)
     const [boards, setBoards] = useState([]);
     const [filteredBoards, setFilteredBoards] = useState([]);
     const [page, setPage] = useState(1);
@@ -36,6 +37,9 @@ const BoardListPage = () => {
     const [mapLevel, setMapLevel] = useState(9); // 지도 레벨 상태 추가
     const [showMyBoards, setShowMyBoards] = useState(false); // 내 작성글 보기 상태
     const [kakaoLoaded, setKakaoLoaded] = useState(false); // Kakao Maps SDK 로드 상태
+    const [bookmarkedBoards, setBookmarkedBoards] = useState([]); // 북마크한 게시글 목록 상태
+    const [showBookmarkedBoards, setShowBookmarkedBoards] = useState(false); // 북마크한 게시글 보기 상태
+    const [searchTitle, setSearchTitle] = useState('');
 
     useEffect(() => {
         if (showMyBoards) {
@@ -70,6 +74,17 @@ const BoardListPage = () => {
             setTotalPages(response.data.totalPages);
         } catch (error) {
             console.error('Error fetching my boards:', error);
+        }
+    };
+    const fetchSearchedBoard = async () => {
+        try {
+            const response = await api.get('/board/search', {
+                params: {title: searchTitle, page, size},
+            });
+            setBoards(response.data.content);
+            setTotalPages(response.data.totalPages);
+        } catch (error) {
+            console.error('Error fetching searched boards:', error);
         }
     };
 
@@ -145,6 +160,24 @@ const BoardListPage = () => {
         navigate('/chat-rooms/list'); // 채팅 목록 페이지로 이동
     };
 
+    const fetchBookmarkedBoards = async () => {
+        try {
+            const response = await api.get(`/bookmark/member/${memberId}`);
+            setBookmarkedBoards(response.data);
+        } catch (error) {
+            console.error('Error fetching bookmarked boards:', error);
+        }
+    };
+
+    const handleInputChange = (e) => {
+        setSearchTitle(e.target.value);
+    };
+
+    const handleSearchSubmit = () => {
+        setPage(1); // 검색 시 페이지를 초기화
+        fetchSearchedBoard();
+    };
+
     return (
         <Container>
             <AppBar position="static">
@@ -179,6 +212,17 @@ const BoardListPage = () => {
                     <Button color="inherit" startIcon={<ChatIcon />} onClick={handleChatClick}>
                         채팅하기
                     </Button>
+                    {/* 관리자 권한이 있는 경우에만 관리자 페이지 아이콘 표시 */}
+                    {role === 'ADMIN' && (
+                        <IconButton
+                            color="inherit"
+                            onClick={() => navigate('/admin/members')}
+                            style={{ marginLeft: '10px' }}
+                            title="관리자 페이지"
+                        >
+                            <AdminPanelSettingsIcon />
+                        </IconButton>
+                    )}
                     <Button color="inherit" onClick={handleLogout}>
                         로그아웃
                     </Button>
@@ -186,7 +230,13 @@ const BoardListPage = () => {
             </AppBar>
 
             <Box mt={2}>
-                <Typography variant="h4">{showMyBoards ? '내 글' : '전체 글'}</Typography>
+                <Typography variant="h4">
+                    {showMyBoards
+                        ? '내 글'
+                        : showBookmarkedBoards
+                            ? '북마크한 글'
+                            : '전체 글'}
+                </Typography>
                 <Link to="/create-board">
                     <Button variant="contained" color="primary">게시글 작성</Button>
                 </Link>
@@ -198,12 +248,45 @@ const BoardListPage = () => {
                 >
                     {showMyBoards ? '전체 글 보기' : '내 글 보기'}
                 </Button>
+                <Button
+                    variant="contained"
+                    color="inherit"
+                    onClick={() => {
+                        setShowBookmarkedBoards(!showBookmarkedBoards);
+                        fetchBookmarkedBoards(); // 북마크한 게시글을 조회하는 함수 호출
+                    }}
+                    style={{ marginLeft: '10px' }}
+                >
+                    {showBookmarkedBoards ? '전체 글 보기' : '북마크한 글 보기'}
+                </Button>
+                {/* 검색 입력 필드와 버튼 */}
+                <TextField
+                    label="제목 검색"
+                    variant="outlined"
+                    value={searchTitle}
+                    onChange={handleInputChange}
+                    size="small"
+                    style={{marginLeft: '10px'}}
+                    onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                            handleSearchSubmit(); // 엔터 키 입력 시 검색 함수 호출
+                        }
+                    }}
+                />
+                <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={handleSearchSubmit}
+                    style={{marginLeft: '10px', height: '40px'}}
+                >
+                    검색
+                </Button>
             </Box>
 
             <Grid container spacing={2} mt={2}>
                 <Grid item xs={12} md={6}>
                     <List>
-                        {filteredBoards.map((board) => (
+                        {(showBookmarkedBoards ? bookmarkedBoards : filteredBoards).map((board) => (
                             <ListItem key={board.boardId}>
                                 <Grid container alignItems="center">
                                     <Grid item xs={10}>
@@ -267,10 +350,10 @@ const BoardListPage = () => {
                         onChange={(e) => setSearchLocation(e.target.value)}
                         fullWidth
                     />
-                    <Button variant="contained" color="primary" onClick={handleSearch} style={{ marginTop: '10px' }}>
+                    <Button variant="contained" color="primary" onClick={handleSearch} style={{marginTop: '10px'}}>
                         검색
                     </Button>
-                    <Map boards={filteredBoards} mapLevel={mapLevel} mapCenter={mapCenter} />
+                    <Map boards={filteredBoards} mapLevel={mapLevel} mapCenter={mapCenter}/>
                 </Grid>
             </Grid>
         </Container>

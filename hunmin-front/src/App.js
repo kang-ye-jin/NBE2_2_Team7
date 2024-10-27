@@ -26,6 +26,11 @@ import TestLanguageSelectPage from './word/TestLanguageSelectPage';
 import TestLevelSelectPage from './word/TestLevelSelectPage';
 import TestPage from './word/TestPage';
 import TestRecords from './word/TestRecords';
+import PasswordVerify from './member/PasswordVerify';
+import PasswordUpdate from './member/PasswordUpdate';
+import AdminMembersList from "./admin/AdminMemberList";
+import AdminMemberPostsAndComments from "./admin/AdminMemberPostsAndComments";
+import AdminMemberDetail from "./admin/AdminMemberDetail";
 
 const App = () => {
     const [token, setToken] = useState(localStorage.getItem('token') || '');
@@ -40,7 +45,7 @@ const App = () => {
 
 const AppContent = ({ token, setToken }) => {
     const location = useLocation();
-    const hideHeaderRoutes = ['/login', '/register'];
+    const hideHeaderRoutes = ['/login', '/register', '/password/verify', '/password/update'];
 
     return (
         <>
@@ -48,6 +53,8 @@ const AppContent = ({ token, setToken }) => {
             <Routes>
                 <Route path="/login" element={<LoginForm setToken={setToken} />} />
                 <Route path="/register" element={<RegistrationForm />} />
+                <Route path="/password/verify" element={<PasswordVerify />} />
+                <Route path="/password/update" element={<PasswordUpdate />} />
                 {token ? (
                     <>
                         <Route path="/" element={<BoardListPage />} />
@@ -80,6 +87,13 @@ const AppContent = ({ token, setToken }) => {
                         <Route path="/word-test/levelSelect" element={<TestLevelSelectPage />} />
                         <Route path="/word-test/start" element={<TestPage />} />
                         <Route path="/word-test/records" element={<TestRecords />} />
+
+                        {/* 관리자 라우트 추가 */}
+                        <Route path="/admin/members" element={<AdminMembersList />} />
+                        <Route path="/admin/member/:memberId" element={<AdminMemberDetail />} />
+                        <Route path="/admin/member/:memberId/posts-comments" element={<AdminMemberPostsAndComments />} />
+
+                        )
                     </>
                 ) : (
                     <Route path="*" element={<Navigate to="/login" />} />
