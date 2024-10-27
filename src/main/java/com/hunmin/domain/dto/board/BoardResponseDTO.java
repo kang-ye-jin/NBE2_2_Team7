@@ -46,8 +46,6 @@ public class BoardResponseDTO {
         this.title = board.getTitle();
         this.nickname = board.getNickname();
         this.profileImage = board.getMember().getImage();
-        log.info("+++++++___+!_!~_+!@__@!");
-        log.info(profileImage);
         this.content = board.getContent();
         this.location = board.getLocation();
         this.latitude = board.getLatitude();
