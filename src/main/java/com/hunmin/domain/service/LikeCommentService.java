@@ -51,7 +51,7 @@ public class LikeCommentService {
                         NotificationSendDTO notificationSendDTO = NotificationSendDTO.builder()
                                 .memberId(commentMemberId)
                                 .message("[" + board.getTitle() + "] 에 작성한 댓글 " + "'" + comment.getContent() +"'에 " + member.getNickname() +" 님의 좋아요")
-                                .notificationType(NotificationType.COMMENT)
+                                .notificationType(NotificationType.LIKE)
                                 .url("/board/" + board.getBoardId())
                                 .build();
 
