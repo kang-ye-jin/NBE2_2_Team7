@@ -9,6 +9,7 @@ import api from '../axios';
 import IconButton from '@mui/material/IconButton';
 import BookmarkIcon from '@mui/icons-material/Bookmark';
 import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
+import {FaUserCircle} from "react-icons/fa";
 
 const BoardDetailPage = () => {
     const { boardId } = useParams();
@@ -37,6 +38,7 @@ const BoardDetailPage = () => {
     const fetchBoard = async () => {
         try {
             const response = await api.get(`/board/${boardId}`);
+            console.log(response.data)
             setBoard(response.data);
             setTitle(response.data.title);
             setContent(response.data.content);
@@ -142,6 +144,10 @@ const BoardDetailPage = () => {
         }
     };
 
+    const isValidProfileImage = (image) => {
+        return image && !image.includes('null');
+    };
+
     if (!board) {
         return <div>Loading...</div>;
     }
@@ -185,7 +191,20 @@ const BoardDetailPage = () => {
                     <div>
                         <Typography variant="h5">{board.title}</Typography>
                         <Typography variant="body1">
-                            <strong>작성자 :</strong> {board.nickname}
+                            {isValidProfileImage(board.profileImage) ? (
+                            <img
+                                src={board.profileImage}
+                                alt="프로필"
+                                style={{
+                                    width: '30px',
+                                    height: '30px',
+                                    borderRadius: '50%',
+                                    objectFit: 'cover',
+                                }}
+                            />
+                        ) : (
+                            <FaUserCircle size={30} style={{ color: '#fff' }} /> // 프로필 아이콘 표시
+                        )} {board.nickname}
                             <span style={{ margin: '0 8px' }} /> {/* 공백 추가 */}
                             <strong>{board.updatedAt ? '수정일 :' : '작성일 :'}</strong> {formatDate(board.updatedAt || board.createdAt)}
                             <span style={{ margin: '0 8px' }} /> {/* 공백 추가 */}

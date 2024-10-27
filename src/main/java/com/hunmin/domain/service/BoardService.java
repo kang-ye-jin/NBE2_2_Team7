@@ -131,6 +131,10 @@ public class BoardService {
     public BoardResponseDTO readBoard(Long boardId) {
         BoardResponseDTO cachedBoard = readBoardFromRedis(String.valueOf(boardId));
         if (cachedBoard != null) {
+            log.info("^^^^^^^^");
+            log.info("^^^^^^^^");
+            log.info("^^^^^^^^");
+            log.info("Loaded board with profile image: {}", cachedBoard.getProfileImage());
             return cachedBoard;
         }
 

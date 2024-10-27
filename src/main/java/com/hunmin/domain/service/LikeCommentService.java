@@ -17,7 +17,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -95,10 +97,15 @@ public class LikeCommentService {
     }
 
     //좋아요 누른 사용자 목록 조회
-    public List<String> getLikeCommentMembers(Long commentId) {
+    public List<Map<String, String>> getLikeCommentMembers(Long commentId) {
         List<Member> members = likeCommentRepository.findMembersByLikedCommentId(commentId);
         return members.stream()
-                .map(Member::getNickname)
+                .map(member -> {
+                    Map<String, String> memberInfo = new HashMap<>();
+                    memberInfo.put("nickname", member.getNickname());
+                    memberInfo.put("image", member.getImage());
+                    return memberInfo;
+                })
                 .collect(Collectors.toList());
     }
 }
