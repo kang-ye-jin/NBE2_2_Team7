@@ -3,7 +3,7 @@ package com.hunmin.domain.controller;
 import com.hunmin.domain.dto.chat.ChatMessageDTO;
 import com.hunmin.domain.dto.chat.ChatMessageListRequestDTO;
 import com.hunmin.domain.dto.member.MemberDTO;
-import com.hunmin.domain.dto.page.ChatMessagePageRequestDTO;
+import com.hunmin.domain.dto.page.PageRequestDTO;
 import com.hunmin.domain.service.ChatMessageService;
 import com.hunmin.domain.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -13,12 +13,9 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RequiredArgsConstructor
 @Controller
@@ -71,7 +68,7 @@ public class ChatMessageController {
     public ResponseEntity<Page<ChatMessageListRequestDTO>> loadMessageList(@PathVariable Long chatRoomId,
                                                                            @RequestParam(value = "page", defaultValue = "1") int page,
                                                                            @RequestParam(value = "size", defaultValue = "10") int size) {
-        ChatMessagePageRequestDTO chatMessagePageRequestDTO = ChatMessagePageRequestDTO.builder().page(page).size(size).build();
-        return ResponseEntity.ok(chatMessageService.getList(chatMessagePageRequestDTO, chatRoomId));
+        PageRequestDTO pageRequestDTO = PageRequestDTO.builder().page(page).size(size).build();
+        return ResponseEntity.ok(chatMessageService.getList(pageRequestDTO, chatRoomId));
     }
 }

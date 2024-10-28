@@ -3,7 +3,7 @@ package com.hunmin.domain.service;
 import com.hunmin.domain.dto.chat.ChatMessageDTO;
 import com.hunmin.domain.dto.chat.ChatMessageListRequestDTO;
 import com.hunmin.domain.dto.notification.NotificationSendDTO;
-import com.hunmin.domain.dto.page.ChatMessagePageRequestDTO;
+import com.hunmin.domain.dto.page.PageRequestDTO;
 import com.hunmin.domain.entity.ChatMessage;
 import com.hunmin.domain.entity.ChatRoom;
 import com.hunmin.domain.entity.Member;
@@ -21,7 +21,6 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
@@ -54,10 +53,9 @@ public class ChatMessageService {
                 .type(chatMessageDTO.getType())
                 .build();
         ChatMessage savedChatMessage = chatMessageRepository.save(chatMessage);
-
-        ChannelTopic topic = ChannelTopic.of("" + chatMessageDTO.getChatRoomId());
         redisSubscriber.sendMessage(new ChatMessageDTO(savedChatMessage));
 
+        // 알림
         Long senderId = sender.getMemberId();
         Long receiverId = null;
 
@@ -131,10 +129,10 @@ public class ChatMessageService {
         return true;
     }
     //채팅목록 페이징
-    public Page<ChatMessageListRequestDTO> getList(ChatMessagePageRequestDTO chatMessagePageRequestDTO, Long chatRoomId) { //목록
+    public Page<ChatMessageListRequestDTO> getList(PageRequestDTO pageRequestDTO, Long chatRoomId) { //목록
         try {
             Sort sort = Sort.by("createdAt").descending();
-            Pageable pageable = chatMessagePageRequestDTO.getPageable(sort);
+            Pageable pageable = pageRequestDTO.getPageable(sort);
             return chatMessageRepository.chatMessageList(pageable, chatRoomId);
         } catch (Exception e) {
             log.error("쳇서비스 페이징 실패 ={}",e.getMessage());
