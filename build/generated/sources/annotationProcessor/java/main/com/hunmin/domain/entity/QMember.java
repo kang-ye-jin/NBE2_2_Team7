@@ -31,6 +31,10 @@ public class QMember extends EntityPathBase<Member> {
 
     public final StringPath email = createString("email");
 
+    public final SetPath<Follow, QFollow> followees = this.<Follow, QFollow>createSet("followees", Follow.class, QFollow.class, PathInits.DIRECT2);
+
+    public final SetPath<Follow, QFollow> followers = this.<Follow, QFollow>createSet("followers", Follow.class, QFollow.class, PathInits.DIRECT2);
+
     public final StringPath image = createString("image");
 
     public final EnumPath<MemberLevel> level = createEnum("level", MemberLevel.class);
