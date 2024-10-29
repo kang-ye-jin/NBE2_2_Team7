@@ -100,7 +100,9 @@ const LearningPage = () => {
                         <Typography variant="body1" fontWeight="bold">{fixedWordDisplays[index]}</Typography>
                         {showTranslation && (
                             <Box>
-                                <Typography variant="body2" color="textSecondary">{word.displayTranslation}</Typography>
+                                <Typography variant="body2" color="textSecondary">
+                                    {fixedWordDisplays[index] === word.displayWord ? word.displayTranslation : word.displayWord}
+                                </Typography>
                                 <Typography variant="body2" color="textSecondary">{word.definition}</Typography>
                             </Box>
                         )}
