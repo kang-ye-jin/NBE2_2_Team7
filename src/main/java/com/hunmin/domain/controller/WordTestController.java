@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("api/words/test")
+@RequestMapping("/api/words/test")
 public class WordTestController {
     private final WordTestService wordTestService;
 
@@ -53,14 +53,21 @@ public class WordTestController {
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/submit")
-    public ResponseEntity<Map<String, Object>> submitAnswers(@RequestBody WordScoreRequestDTO wordScoreRequestDTO) {
-        Long memberId = wordScoreRequestDTO.getMemberId();
-        String testLang = wordScoreRequestDTO.getTestLang();
-        String testLevel = wordScoreRequestDTO.getTestLevel();
-        int correctCount = wordScoreRequestDTO.getCorrectCount();
+//    @PostMapping("/submit")
+//    public ResponseEntity<Map<String, Object>> submitAnswers(@RequestBody WordScoreRequestDTO wordScoreRequestDTO) {
+//        Long memberId = wordScoreRequestDTO.getMemberId();
+//        String testLang = wordScoreRequestDTO.getTestLang();
+//        String testLevel = wordScoreRequestDTO.getTestLevel();
+//        int correctCount = wordScoreRequestDTO.getCorrectCount();
+//
+//        Map<String, Object> scoreResult = wordTestService.submitAnswers(memberId, testLang, testLevel, correctCount);
+//
+//        return ResponseEntity.ok(scoreResult);
+//    }
 
-        Map<String, Object> scoreResult = wordTestService.submitAnswers(memberId, testLang, testLevel, correctCount);
+    @PostMapping("/submit")
+    public ResponseEntity<Map<String, Object>> submitAnswers(@RequestBody WordScoreRequestDTO wordScoreRequestDTO){
+        Map<String, Object> scoreResult = wordTestService.submitAnswers(wordScoreRequestDTO);
 
         return ResponseEntity.ok(scoreResult);
     }
@@ -70,7 +77,7 @@ public class WordTestController {
         return wordTestService.getRankings();
     }
 
-    @GetMapping("records")
+    @GetMapping("/records")
     public List<WordScoreResponseDTO> getUserTestScores(@RequestParam Long memberId) {
         return wordTestService.getUserTestScores(memberId);
     }

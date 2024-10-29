@@ -100,8 +100,18 @@ const TestPage = () => {
                 testLevel: selectedLevel,
             });
 
+            console.log("Submitting answers:", {
+                memberId,
+                correctCount: correctCountTemp,
+                testLang: selectedLanguage,
+                testLevel: selectedLevel,
+            });
+
             setFinalScore(response.data.finalScore);
             setPenaltyScore(response.data.penaltyScore);
+
+            console.log("Response data:", response.data);
+
             setCorrectAnswers(correctAnswers);
             setCorrectCount(correctCountTemp);
             setIncorrectCount(words.length - correctCountTemp);

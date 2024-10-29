@@ -4,9 +4,15 @@ import com.hunmin.domain.entity.Member;
 import com.hunmin.domain.entity.WordScore;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 public interface WordScoreRepository extends JpaRepository<WordScore, Long> {
-    List<WordScore> findTop100ByOrderByTestRankScoreDescTestLevelDescCreatedAtAsc();   // 전체 랭킹 순위
+    // 전체 점수 랭킹
+    @Query("SELECT ws FROM WordScore ws ORDER BY ws.testScore DESC, ws.testLevel DESC, ws.createdAt ASC")
+    List<WordScore> getTopRankers();
 
-    List<WordScore> findByMember_MemberIdOrderByCreatedAtDesc(Long memberId);
+    // 개인 시험 기록 조회
+    @Query("SELECT ws FROM WordScore ws WHERE ws.member.memberId = :memberId ORDER BY ws.createdAt DESC")
+    List<WordScore> getUserScores(@Param("memberId") Long memberId);
 }

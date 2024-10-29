@@ -211,8 +211,8 @@ const TestLanguageSelectPage = () => {
                 <Box sx={{
                     position: 'fixed',
                     bottom: 0,
-                    left: 595,
-                    right: 595,
+                    left: 0,
+                    right: 0,
                     backgroundColor: '#f5f5f5',
                     padding: 2,
                     display: 'flex',
@@ -235,19 +235,26 @@ const TestLanguageSelectPage = () => {
                     }}>
                         나의 순위
                     </Typography>
-                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', paddingLeft: '200px', paddingRight: '180px' }}>
+                    <Box sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center', // 중앙 정렬
+                        width: '100%',
+                        paddingLeft: '20px', // 좌우 패딩 조정
+                        paddingRight: '20px', // 좌우 패딩 조정
+                    }}>
                         {userInfo ? (
                             <>
-                                <Box sx={{ display: 'flex', alignItems: 'center', marginRight: '20px' }}>
-                                    <Avatar src={userInfo.profileImage} sx={{ width: 30, height: 30, marginRight: '8px' }} />
+                                <Box sx={{ display: 'flex', alignItems: 'center', marginRight: '10px' }}> {/* 오른쪽 여백 줄이기 */}
+                                    <Avatar src={userInfo.profileImage} sx={{ width: 30, height: 30, marginRight: '10px' }} />
                                     <Typography variant="body1" sx={{ fontSize: '1.2rem' }}>{userInfo.nickName}</Typography>
                                 </Box>
-                                <Typography variant="body1" sx={{ fontSize: '1.2rem', width: '80px', textAlign: 'center' }}>
+                                <Typography variant="body1" sx={{ fontSize: '1.2rem', width: '50px', textAlign: 'center', marginLeft: '140px' }}>
                                     {filteredRankings.findIndex(score => score.wordScoreId === userInfo.wordScoreId) + 1 || '-'}위
                                 </Typography>
-                                <Typography variant="body1" sx={{ fontSize: '1.2rem', width: '80px', textAlign: 'center', marginLeft: '10px', marginRight: '10px' }}>{userInfo.testLang}</Typography>
-                                <Typography variant="body1" sx={{ fontSize: '1.2rem', width: '80px', textAlign: 'center', marginLeft: '10px', marginRight: '10px' }}>{userInfo.testLevel}</Typography>
-                                <Typography variant="body1" sx={{ fontSize: '1.2rem', width: '80px', textAlign: 'center' }}>{userInfo.testRankScore}</Typography>
+                                <Typography variant="body1" sx={{ fontSize: '1.2rem', width: '70px', textAlign: 'center', marginLeft: '140px', marginRight: '140px' }}>{userInfo.testLang}</Typography>
+                                <Typography variant="body1" sx={{ fontSize: '1.2rem', width: '70px', textAlign: 'center', marginLeft: '20px', marginRight: '140px' }}>{userInfo.testLevel}</Typography>
+                                <Typography variant="body1" sx={{ fontSize: '1.2rem', width: '70px', textAlign: 'center' }}>{userInfo.testRankScore}</Typography>
                             </>
                         ) : (
                             <Typography variant="body1" sx={{ fontSize: '1.2rem', textAlign: 'center', width: '100%' }}>

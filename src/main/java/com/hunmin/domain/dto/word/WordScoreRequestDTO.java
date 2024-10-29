@@ -1,6 +1,7 @@
 package com.hunmin.domain.dto.word;
 
 
+import com.hunmin.domain.entity.Member;
 import com.hunmin.domain.entity.Word;
 import com.hunmin.domain.entity.WordScore;
 import jakarta.validation.constraints.NotBlank;
@@ -13,23 +14,29 @@ import lombok.Setter;
 @NoArgsConstructor
 public class WordScoreRequestDTO {
     private Long wordScoreId;
-    private Long memberId; // 로그인한 사용자 ID
-    private String testLang; // 선택한 언어
-    private String testLevel; // 선택한 레벨
+    private Long memberId;
+    private String testLang;
+    private String testLevel;
     private int testScore;
     private Double testRankScore;
 
     private int correctCount;
 
 
-    public WordScore toEntity() {
+    public WordScore toEntity(Member member) {
         return WordScore.builder()
                 .wordScoreId(wordScoreId)
+                .member(member)
                 .testLang(testLang)
                 .testLevel(testLevel)
-                .testScore(testScore)
-                .testRankScore(testRankScore)
+                .testScore(this.testScore)
+                .testRankScore(this.testRankScore)
                 .build();
+    }
+
+    public void setScore(int finalScore, double penaltyScore) {
+        this.testScore = finalScore;
+        this.testRankScore = penaltyScore;
     }
 }
 

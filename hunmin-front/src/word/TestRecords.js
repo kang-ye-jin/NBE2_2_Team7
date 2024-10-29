@@ -73,10 +73,9 @@ const TestRecords = () => {
                         <Typography variant="body1" sx={{ fontSize: '1.2rem', fontWeight: 'bold' }}>
                             {record.testLang} 시험 Level {record.testLevel}
                         </Typography>
-                        <Typography variant="body1">응시 날짜: {new Date(record.createdAt).toLocaleString()}</Typography>
-                        <Typography variant="body1">순위: {record.testRank}</Typography>
-                        <Typography variant="body1">시험 점수: {record.testScore}</Typography>
-                        <Typography variant="body1">랭크 점수: {record.testRankScore}</Typography>
+                        <Typography variant="body1">응시 날짜 : {new Date(record.createdAt).toLocaleString()}</Typography>
+                        <Typography variant="body1">시험 점수 : {record.testScore}점</Typography>
+                        <Typography variant="body1">랭크 점수 : {record.testRankScore}점</Typography>
                     </Box>
                 ))
             )}

@@ -28,9 +28,9 @@ public class WordScore extends BaseTimeEntity {
     @JoinColumn(name="member_id")
     private Member member;
 
-    private String testLang;            // 테스트 진행한 언어
-    private String testLevel;             // 테스트 진행한 레벨
-    private int testScore;             // test 시험 결과
-    private Double testRankScore;         // level에 따른 패널티 적용된 점수
+    private String testLang;
+    private String testLevel;
+    private int testScore;
+    private Double testRankScore;
 }
 

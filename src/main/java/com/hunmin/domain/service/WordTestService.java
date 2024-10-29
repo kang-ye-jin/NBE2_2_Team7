@@ -12,6 +12,7 @@ import com.hunmin.domain.exception.WordException;
 import com.hunmin.domain.repository.MemberRepository;
 import com.hunmin.domain.repository.WordRepository;
 import com.hunmin.domain.repository.WordScoreRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,17 +24,18 @@ import java.util.stream.Collectors;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@RequiredArgsConstructor
 public class WordTestService {
     private final WordRepository wordRepository;
     private final WordScoreRepository wordScoreRepository;
     private final MemberRepository memberRepository;
 
-    @Autowired
-    public WordTestService(WordRepository wordRepository, WordScoreRepository wordScoreRepository, MemberRepository memberRepository) {
-        this.wordRepository = wordRepository;
-        this.wordScoreRepository = wordScoreRepository;
-        this.memberRepository = memberRepository;
-    }
+//    @Autowired
+//    public WordTestService(WordRepository wordRepository, WordScoreRepository wordScoreRepository, MemberRepository memberRepository) {
+//        this.wordRepository = wordRepository;
+//        this.wordScoreRepository = wordScoreRepository;
+//        this.memberRepository = memberRepository;
+//    }
 
     // 선택한 언어와 레벨에 따라 랜덤한 단어를 가져오는 메서드
     public List<WordResponseDTO> getRandomTestWords(String lang, String level) {
@@ -73,14 +75,28 @@ public class WordTestService {
         return dto;
     }
 
-    // 답변 제출 메서드
+//    // 답변 제출 메서드
+//    @Transactional
+//    public Map<String, Object> submitAnswers(Long memberId, String testLang, String testLevel, int correctCount) {
+//
+//        int finalScore = calculateFinalScore(correctCount, testLevel);
+//        double penaltyScore = calculatePenaltyScore(finalScore, testLevel);
+//
+//        saveTestScore(memberId, finalScore, penaltyScore, testLang, testLevel);
+//
+//        Map<String, Object> result = new HashMap<>();
+//        result.put("finalScore", finalScore);
+//        result.put("penaltyScore", penaltyScore);
+//        return result;
+//    }
+
     @Transactional
-    public Map<String, Object> submitAnswers(Long memberId, String testLang, String testLevel, int correctCount) {
+    public Map<String, Object> submitAnswers(WordScoreRequestDTO requestDTO) {
+        int finalScore = calculateFinalScore(requestDTO.getCorrectCount(), requestDTO.getTestLevel());
+        double penaltyScore = calculatePenaltyScore(finalScore, requestDTO.getTestLevel());
 
-        int finalScore = calculateFinalScore(correctCount, testLevel);
-        double penaltyScore = calculatePenaltyScore(finalScore, testLevel);
-
-        saveTestScore(memberId, finalScore, penaltyScore, testLang, testLevel);
+        requestDTO.setScore(finalScore, penaltyScore);
+        saveTestScore(requestDTO);
 
         Map<String, Object> result = new HashMap<>();
         result.put("finalScore", finalScore);
@@ -88,20 +104,30 @@ public class WordTestService {
         return result;
     }
 
-    // 점수 저장 메서드
+//    // 점수 저장 메서드
+//    @Transactional
+//    public void saveTestScore(Long memberId, int finalScore, Double penaltyScore, String lang, String level) {
+//        // 회원 조회
+//        Member member = memberRepository.findById(memberId)
+//                .orElseThrow(() -> new RuntimeException("Member not found"));
+//        // WordScore 객체 생성 및 저장
+//        WordScore wordScore = WordScore.builder()
+//                .member(member)
+//                .testScore(finalScore)
+//                .testRankScore(penaltyScore)
+//                .testLang(lang)
+//                .testLevel(level)
+//                .build();
+//        wordScoreRepository.save(wordScore);
+//    }
+
     @Transactional
-    public void saveTestScore(Long memberId, int finalScore, Double penaltyScore, String lang, String level) {
-        // 회원 조회
-        Member member = memberRepository.findById(memberId)
+    public void saveTestScore(WordScoreRequestDTO requestDTO) {
+        Member member = memberRepository.findById(requestDTO.getMemberId())
                 .orElseThrow(() -> new RuntimeException("Member not found"));
-        // WordScore 객체 생성 및 저장
-        WordScore wordScore = WordScore.builder()
-                .member(member)
-                .testScore(finalScore)
-                .testRankScore(penaltyScore)
-                .testLang(lang)
-                .testLevel(level)
-                .build();
+
+        WordScore wordScore = requestDTO.toEntity(member);
+
         wordScoreRepository.save(wordScore);
     }
 
@@ -139,7 +165,7 @@ public class WordTestService {
 
     // 전체 랭킹 순위
     public List<WordScoreResponseDTO> getRankings() {
-        List<WordScore> wordScores = wordScoreRepository.findTop100ByOrderByTestRankScoreDescTestLevelDescCreatedAtAsc();
+        List<WordScore> wordScores = wordScoreRepository.getTopRankers();
 
         // 랭킹 기록이 없을 경우 빈 리스트 반환
         if (wordScores.isEmpty()) {
@@ -154,7 +180,7 @@ public class WordTestService {
 
     // 개인 시험 기록
     public List<WordScoreResponseDTO> getUserTestScores(Long memberId) {
-        List<WordScore> wordScores = wordScoreRepository.findByMember_MemberIdOrderByCreatedAtDesc(memberId);
+        List<WordScore> wordScores = wordScoreRepository.getUserScores(memberId);
 
         // 시험 기록이 없을 경우 빈 리스트 반환
         if (wordScores.isEmpty()) {
