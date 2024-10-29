@@ -52,9 +52,6 @@ const WordLearningPage = () => {
                         단어사전
                     </Button>
                     <Typography variant="body1" sx={{ marginTop: 1, lineHeight: 1.6 }}>
-                        단어 검색 기능입니다.
-                    </Typography>
-                    <Typography variant="body1" sx={{ marginTop: 1, lineHeight: 1.6 }}>
                         영어, 일본어, 중국어, 베트남어, 프랑스어
                     </Typography>
                     <Typography variant="body1" sx={{ marginTop: 1, lineHeight: 1.6 }}>
@@ -74,13 +71,10 @@ const WordLearningPage = () => {
                         단어 학습
                     </Button>
                     <Typography variant="body1" sx={{ marginTop: 1, lineHeight: 1.6 }}>
-                        정해진 시간 동안 선택한 언어로
+                        정해진 시간 동안 한국어 단어와 선택한 언어의 단어가 랜덤으로 표시됩니다.
                     </Typography>
                     <Typography variant="body1" sx={{ marginTop: 1, lineHeight: 1.6 }}>
-                        한국어 단어와 해당 언어의 단어가 랜덤으로 표시됩니다.
-                    </Typography>
-                    <Typography variant="body1" sx={{ marginTop: 1, lineHeight: 1.6 }}>
-                        남은 시간 안에 각 단어의 의미를 생각해 보세요.
+                        각 단어의 의미를 생각해보고 일치했는지 확인해보세요.
                     </Typography>
                 </Paper>
 
@@ -96,7 +90,7 @@ const WordLearningPage = () => {
                         단어 시험
                     </Button>
                     <Typography variant="body1" sx={{ marginTop: 1, lineHeight: 1.6 }}>
-                        정해진 시간 동안 주어지는 문제의 한국어 해석을 입력하세요.
+                        정해진 시간 동안 선택한 언어로 주어지는 단어를 한국어로 번역하세요.
                     </Typography>
                     <Typography variant="body1" sx={{ marginTop: 1, lineHeight: 1.6 }}>
                         자신의 점수를 확인하고 실력을 평가해 보세요.
