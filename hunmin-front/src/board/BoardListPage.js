@@ -20,6 +20,7 @@ import {
 } from '@mui/material';
 import ChatIcon from '@mui/icons-material/Chat'; // 채팅 아이콘 임포트
 import EditIcon from '@mui/icons-material/Edit'; // 연필 아이콘 임포트
+import PeopleIcon from '@mui/icons-material/People';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings'; //관리자 페이지 이동 버튼
 const BoardListPage = () => {
     const navigate = useNavigate(); // navigate 함수 추가
@@ -60,6 +61,7 @@ const BoardListPage = () => {
             });
             setBoards(response.data.content);
             setTotalPages(response.data.totalPages);
+            console.log(response.data)
         } catch (error) {
             console.error('Error fetching boards:', error);
         }
@@ -160,6 +162,11 @@ const BoardListPage = () => {
         navigate('/chat-rooms/list'); // 채팅 목록 페이지로 이동
     };
 
+    // 팔로우 버튼 클릭 핸들러
+    const handleFollowClick = () => {
+        navigate('/followForm'); // 채팅 목록 페이지로 이동
+    };
+
     const fetchBookmarkedBoards = async () => {
         try {
             const response = await api.get(`/bookmark/member/${memberId}`);
@@ -211,6 +218,9 @@ const BoardListPage = () => {
                     {/* 오른쪽: 채팅하기 버튼 */}
                     <Button color="inherit" startIcon={<ChatIcon />} onClick={handleChatClick}>
                         채팅하기
+                    </Button>
+                    <Button color="inherit" startIcon={<PeopleIcon />} onClick={handleFollowClick}>
+                        FOLLOW 화면
                     </Button>
                     {/* 관리자 권한이 있는 경우에만 관리자 페이지 아이콘 표시 */}
                     {role === 'ADMIN' && (
@@ -293,7 +303,21 @@ const BoardListPage = () => {
                                         <ListItemText
                                             primary={
                                                 <Link to={`/board/${board.boardId}`} style={{ textDecoration: 'none', color: 'inherit' }}>
-                                                    <strong>{board.title}</strong> - {board.nickname}
+                                                    <strong>{board.title}</strong> -
+                                                    {isValidProfileImage(board.profileImage) ? (
+                                                        <img
+                                                            src={board.profileImage} // Remove curly braces around board.profileImage
+                                                            alt="프로필"
+                                                            style={{
+                                                                width: '30px',
+                                                                height: '30px',
+                                                                borderRadius: '50%',
+                                                                objectFit: 'cover',
+                                                            }}
+                                                        />
+                                                    ) : (
+                                                        <FaUserCircle size={30} style={{ color: '#fff' }} /> // 프로필 아이콘 표시
+                                                    )} {board.nickname}
                                                 </Link>
                                             }
                                             secondary={

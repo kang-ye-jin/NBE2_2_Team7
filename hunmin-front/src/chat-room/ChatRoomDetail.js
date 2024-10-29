@@ -104,7 +104,6 @@ const ChatRoomDetail = () => {
     const scrollToBottom = () => {
         if (messagesEndRef.current) {
             messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
-            console.log("끝까지 내리는거 실행됨 되고 후 실행됨")
         }
     };
 

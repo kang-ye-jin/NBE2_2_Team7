@@ -28,6 +28,9 @@ import TestPage from './word/TestPage';
 import TestRecords from './word/TestRecords';
 import PasswordVerify from './member/PasswordVerify';
 import PasswordUpdate from './member/PasswordUpdate';
+
+import FollowForm from './follow/followForm'; // followForm 컴포넌트 임포트
+
 import AdminMembersList from "./admin/AdminMemberList";
 import AdminMemberPostsAndComments from "./admin/AdminMemberPostsAndComments";
 import AdminMemberDetail from "./admin/AdminMemberDetail";
@@ -87,6 +90,9 @@ const AppContent = ({ token, setToken }) => {
                         <Route path="/word-test/levelSelect" element={<TestLevelSelectPage />} />
                         <Route path="/word-test/start" element={<TestPage />} />
                         <Route path="/word-test/records" element={<TestRecords />} />
+
+                        {/* 팔로우 기능 시스템 라우트 추가 */}
+                        <Route path="/followForm" element={<FollowForm />} />
 
                         {/* 관리자 라우트 추가 */}
                         <Route path="/admin/members" element={<AdminMembersList />} />
