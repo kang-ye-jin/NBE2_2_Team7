@@ -30,13 +30,6 @@ public class WordTestService {
     private final WordScoreRepository wordScoreRepository;
     private final MemberRepository memberRepository;
 
-//    @Autowired
-//    public WordTestService(WordRepository wordRepository, WordScoreRepository wordScoreRepository, MemberRepository memberRepository) {
-//        this.wordRepository = wordRepository;
-//        this.wordScoreRepository = wordScoreRepository;
-//        this.memberRepository = memberRepository;
-//    }
-
     // 선택한 언어와 레벨에 따라 랜덤한 단어를 가져오는 메서드
     public List<WordResponseDTO> getRandomTestWords(String lang, String level) {
         // 언어에 따라 단어 리스트 가져오기
@@ -75,21 +68,6 @@ public class WordTestService {
         return dto;
     }
 
-//    // 답변 제출 메서드
-//    @Transactional
-//    public Map<String, Object> submitAnswers(Long memberId, String testLang, String testLevel, int correctCount) {
-//
-//        int finalScore = calculateFinalScore(correctCount, testLevel);
-//        double penaltyScore = calculatePenaltyScore(finalScore, testLevel);
-//
-//        saveTestScore(memberId, finalScore, penaltyScore, testLang, testLevel);
-//
-//        Map<String, Object> result = new HashMap<>();
-//        result.put("finalScore", finalScore);
-//        result.put("penaltyScore", penaltyScore);
-//        return result;
-//    }
-
     @Transactional
     public Map<String, Object> submitAnswers(WordScoreRequestDTO requestDTO) {
         int finalScore = calculateFinalScore(requestDTO.getCorrectCount(), requestDTO.getTestLevel());
@@ -103,23 +81,6 @@ public class WordTestService {
         result.put("penaltyScore", penaltyScore);
         return result;
     }
-
-//    // 점수 저장 메서드
-//    @Transactional
-//    public void saveTestScore(Long memberId, int finalScore, Double penaltyScore, String lang, String level) {
-//        // 회원 조회
-//        Member member = memberRepository.findById(memberId)
-//                .orElseThrow(() -> new RuntimeException("Member not found"));
-//        // WordScore 객체 생성 및 저장
-//        WordScore wordScore = WordScore.builder()
-//                .member(member)
-//                .testScore(finalScore)
-//                .testRankScore(penaltyScore)
-//                .testLang(lang)
-//                .testLevel(level)
-//                .build();
-//        wordScoreRepository.save(wordScore);
-//    }
 
     @Transactional
     public void saveTestScore(WordScoreRequestDTO requestDTO) {

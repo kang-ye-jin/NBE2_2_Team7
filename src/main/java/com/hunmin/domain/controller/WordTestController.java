@@ -53,18 +53,6 @@ public class WordTestController {
         return ResponseEntity.ok(response);
     }
 
-//    @PostMapping("/submit")
-//    public ResponseEntity<Map<String, Object>> submitAnswers(@RequestBody WordScoreRequestDTO wordScoreRequestDTO) {
-//        Long memberId = wordScoreRequestDTO.getMemberId();
-//        String testLang = wordScoreRequestDTO.getTestLang();
-//        String testLevel = wordScoreRequestDTO.getTestLevel();
-//        int correctCount = wordScoreRequestDTO.getCorrectCount();
-//
-//        Map<String, Object> scoreResult = wordTestService.submitAnswers(memberId, testLang, testLevel, correctCount);
-//
-//        return ResponseEntity.ok(scoreResult);
-//    }
-
     @PostMapping("/submit")
     public ResponseEntity<Map<String, Object>> submitAnswers(@RequestBody WordScoreRequestDTO wordScoreRequestDTO){
         Map<String, Object> scoreResult = wordTestService.submitAnswers(wordScoreRequestDTO);
