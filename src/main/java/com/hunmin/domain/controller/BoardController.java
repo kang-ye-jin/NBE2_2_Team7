@@ -120,4 +120,10 @@ public class BoardController {
         Page<BoardResponseDTO> boardResponseDTOS = boardService.searchBoardByTitle(pageRequestDTO, title);
         return ResponseEntity.ok().body(boardResponseDTOS);
     }
+
+    //게시글 조회
+    @GetMapping("/test/{boardId}")
+    public ResponseEntity<BoardResponseDTO> readBoard1(@PathVariable Long boardId) {
+        return ResponseEntity.ok(boardService.readBoard(boardId));
+    }
 }

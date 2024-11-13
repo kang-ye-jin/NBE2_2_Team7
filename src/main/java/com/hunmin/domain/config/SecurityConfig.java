@@ -92,6 +92,7 @@ public class SecurityConfig {
                         .requestMatchers("/v3/api-docs/**").permitAll() //swagger
                         .requestMatchers("/swagger-ui.html").permitAll() // 추가
                         .requestMatchers("/api/notices/list/**").permitAll() // 추가
+                        .requestMatchers("/api/board/test/**").permitAll() // 추가
                         .anyRequest().permitAll())
 
                 .sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
