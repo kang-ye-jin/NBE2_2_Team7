@@ -54,5 +54,6 @@ jobs:
           application_name: grepp-web
           environment_name: Grepp-web-env
           region: ap-northeast-2
-          file: ${{ env.artifact }}
+          deployment_package: ${{ env.artifact }}
+          version_label: ${{ github.sha }}
           wait_for_deployment: true
