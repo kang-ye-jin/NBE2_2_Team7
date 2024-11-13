@@ -38,15 +38,13 @@ jobs:
           format: YYYY-MM-DDTHH-mm-ss
           utcOffset: "+09:00"
 
-      # 배포용 패키지 경로 저장
+      # 배포용 패키지 경로 설정
       - name: Set artifact path
         run: |
           artifact=$(ls ./build/libs/*.jar | head -n 1)
           echo "artifact=$artifact" >> $GITHUB_ENV
 
-      - name: Check artifact path
-        run: echo "Artifact path: ${{ env.artifact }}"
-
+      # 빈스토크 배포
       - name: Deploy to Elastic Beanstalk
         uses: einaregilsson/beanstalk-deploy@v20
         with:
@@ -54,7 +52,6 @@ jobs:
           aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           application_name: grepp-web
           environment_name: Grepp-web-env
-          region: ap-northeast-2
-          file: ${{ env.artifact }}
           version_label: github-action-${{ steps.current-time.outputs.time }}
-          wait_for_deployment: true
+          region: ap-northeast-2
+          deployment_package: ${{ env.artifact }}
