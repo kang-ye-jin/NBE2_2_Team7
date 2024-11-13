@@ -1,14 +1,6 @@
-name: CI/CD
-
-on:
-  push:
-    branches: [ develop ]
-
 jobs:
   build:
-    # 실행 환경 지정
     runs-on: ubuntu-latest
-    # 실행 스텝 지정
     steps:
       - uses: actions/checkout@v3
 
@@ -32,7 +24,6 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew clean build
 
-      # 현재 시간 가져오기
       - name: Get current time
         uses: josStorer/get-current-time@v2
         id: current-time
@@ -40,7 +31,6 @@ jobs:
           format: YYYY-MM-DDTHH-mm-ss
           utcOffset: "+09:00"
 
-      # 배포용 패키지 경로 저장
       - name: Set artifact path
         run: |
           artifact=$(ls ./build/libs/*.jar | head -n 1)
