@@ -46,16 +46,15 @@ jobs:
           artifact=$(ls ./build/libs/*.jar | head -n 1)
           echo "artifact=$artifact" >> $GITHUB_ENV
 
-      # 빈스토크 배포
-      - name: Deploy to Elastic Beanstalk
+            # 빈스토크 배포
+      - name: Beanstalk Deploy
         uses: einaregilsson/beanstalk-deploy@v20
         with:
-          aws_access_key: ${{ secrets.AWS_ACCESS_KEY }}
-          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws_access_key: ${{secrets.AWS_ACCESS_KEY}}
+          aws_secret_key: ${{secrets.AWS_SECRET_ACCESS_KEY}}
           application_name: grepp-web
           environment_name: Grepp-web-env
+          version_label: github-action-${{steps.current-time.outputs.formattedTime}}
           region: ap-northeast-2
-          file: ${{ env.artifact }}
-          version_label: github-action-${{ steps.current-time.outputs.time }}
-          wait_for_deployment: true
+          deployment_package: ./build/libs/${{env.artifact}}
 
